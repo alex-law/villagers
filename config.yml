@@ -3,3 +3,5 @@ MONGO_DB:
   PORT: 27017
   USERNAME: root
   PASSWORD: rootpassword
+  DB: todo
+  COL: todo_list

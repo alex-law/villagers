@@ -1,23 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for
-from settup import getConfig, pyMongoConnect
+from settup import getConfig
+from mongoCommands import dbObj
 
 app = Flask(__name__)
 
 config = getConfig()
-db_client = pyMongoConnect(config)
+db = dbObj(config)
 
-print('hold')
-
-class Todo():
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    complete = db.Column(db.Boolean)
 
 @app.get("/")
 def home():
-    # todo_list = Todo.query.all()
-    todo_list = db.session.query(Todo).all()
-    # return "Hello, World!"
+    todo_list = db.getToDo()
     return render_template("base.html", todo_list=todo_list)
 
 
@@ -25,7 +18,7 @@ def home():
 @app.post("/add")
 def add():
     title = request.form.get("title")
-    new_todo = Todo(title=title, complete=False)
+    new_todo = db(title=title, complete=False)
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for("home"))
@@ -33,8 +26,8 @@ def add():
 
 @app.get("/update/<int:todo_id>")
 def update(todo_id):
-    # todo = Todo.query.filter_by(id=todo_id).first()
-    todo = db.session.query(Todo).filter(Todo.id == todo_id).first()
+    # todo = db.query.filter_by(id=todo_id).first()
+    todo = db.session.query(db).filter(db.id == todo_id).first()
     todo.complete = not todo.complete
     db.session.commit()
     return redirect(url_for("home"))
@@ -42,8 +35,8 @@ def update(todo_id):
 
 @app.get("/delete/<int:todo_id>")
 def delete(todo_id):
-    # todo = Todo.query.filter_by(id=todo_id).first()
-    todo = db.session.query(Todo).filter(Todo.id == todo_id).first()
+    # todo = db.query.filter_by(id=todo_id).first()
+    todo = db.session.query(db).filter(db.id == todo_id).first()
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for("home"))
