@@ -1,0 +1,1 @@
+docker-compose -f mongo_db/docker-compose.mongo_db.yml up -d

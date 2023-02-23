@@ -1,0 +1,5 @@
+MONGO_DB:
+  URL: localhost
+  PORT: 27017
+  USERNAME: root
+  PASSWORD: rootpassword
