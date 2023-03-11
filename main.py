@@ -18,25 +18,22 @@ def home():
 @app.post("/add")
 def add():
     title = request.form.get("title")
-    new_todo = db(title=title, complete=False)
-    db.session.add(new_todo)
-    db.session.commit()
+    if len(title.strip()) > 0:
+        new_todo_dict = {'title': title,
+                        'complete': False}
+        db.addToDo(new_todo_dict)
     return redirect(url_for("home"))
 
 
 @app.get("/update/<int:todo_id>")
 def update(todo_id):
-    # todo = db.query.filter_by(id=todo_id).first()
-    todo = db.session.query(db).filter(db.id == todo_id).first()
-    todo.complete = not todo.complete
-    db.session.commit()
+    todo = db.collection.find_one({'id': str(todo_id)})
+    todo['complete'] = not todo['complete']
+    db.collection.update_one({'id':str(todo_id)}, {"$set": todo}, upsert=False)
     return redirect(url_for("home"))
 
 
 @app.get("/delete/<int:todo_id>")
 def delete(todo_id):
-    # todo = db.query.filter_by(id=todo_id).first()
-    todo = db.session.query(db).filter(db.id == todo_id).first()
-    db.session.delete(todo)
-    db.session.commit()
+    db.collection.delete_one({'id': str(todo_id)})
     return redirect(url_for("home"))
