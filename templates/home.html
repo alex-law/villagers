@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Villagers App</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</head>
+
+<body>
+    <div style="margin-top: 50px;" class="ui container">
+        <h1 class="ui center aligned header">Villagers</h1>
+
+        <form class="ui form" action="/newGame" method="post">
+            <div class="field">
+                <label>Enter player name</label>
+                <input type="text" name="player_name" placeholder="Player name..."><br>
+                <lable>Enter game id</lable>
+                <input type="text" name="game_id" placeholder="Gamie id..."><br>
+                <lable> New game</lable>
+                <input type="checkbox" name="new_game" value="yes"><br>
+            </div>
+            <button class="ui green button" type="submit">Enter</button>
+        </form>
+
+        {% if valid|length > 0 %}
+        <hr>
+
+        <div class="ui segment">
+            <p classs="ui small header">{{valid}}</p>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>
