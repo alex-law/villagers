@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
-from settup import getConfig
 from mongoCommands import dbObj
 from villageObjects import gameObj, playerObj
+
+from settup import getConfig
+from logic.game_start import getUserInput, validateInput
 
 app = Flask(__name__)
 
@@ -19,22 +21,10 @@ def game():
 
 @app.post("/newGame")
 def newGame():
-    #If no player name return tell user
-    player_name = request.form.get("player_name")
-    if len(player_name.strip()) == 0:
-        # return redirect(url_for("home"), valid='Please enter a user name')
-        return render_template("home.html", valid= 'Please enter a user name')
-    #If no game id but new game not tell user
-    game_id = request.form.get("game_id")
-    new_game = request.form.get("new_game")
-    if (len(game_id.strip()) == 0 and new_game is None):
-        return render_template("home.html", valid= 'Please select new game or enter a game id')
-    #If game id already exists and user is trying to start a new game
-    if (db.collection.find_one({'game_id': game_id}) is not None) and (new_game is not None):
-        return render_template("home.html", valid='Game id is currently in use, please choose a new id')
-    #If game id does not exist and user is trying to join game
-    if (db.collection.find_one({'game_id': game_id}) is None) and (new_game is None):
-        return render_template("home.html", valid='Game id does not exist, please check your game id or request a new one')
+    player_name, game_id, new_game = getUserInput()
+    success, message = validateInput(player_name, game_id, new_game, db)
+    if not success:
+        return render_template("home.html", valid=message)
     #Made it past all this so initiate player
     player = playerObj(player_name)
     #Start a new game
