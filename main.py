@@ -32,7 +32,7 @@ def newGame():
     #Made it past all this so initiate player obj
     player = playerObj(player_name)
     #Start a new game
-    if new_game is not None:
+    if new_game:
         game = newGame(player, game_id, db)
         return render_template('lobby.html', game=game)
     #Else get current game
