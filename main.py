@@ -3,7 +3,8 @@ from mongoCommands import dbObj
 from villageObjects import gameObj, playerObj
 
 from settup import getConfig
-from logic.game_start import getUserInput, validateInput
+from logic.start_game import (getUserInput, validateInput,
+                              checkExistingPlayer, startExistingGame)
 
 app = Flask(__name__)
 
@@ -21,37 +22,29 @@ def game():
 
 @app.post("/newGame")
 def newGame():
+    """This is the landing page for starting a new game"""
+    # Get input details from player
     player_name, game_id, new_game = getUserInput()
+    # Check to make sure user inputs are all valid, if not alert user
     success, message = validateInput(player_name, game_id, new_game, db)
     if not success:
         return render_template("home.html", valid=message)
-    #Made it past all this so initiate player
+    #Made it past all this so initiate player obj
     player = playerObj(player_name)
     #Start a new game
     if new_game is not None:
-        #Initiate game obj
-        game = gameObj(player, init_game_id=game_id)
-        #save game to db
-        game.mongo_id = db.collection.insert_one(game.gameToDict()).inserted_id
+        game = newGame(player, game_id, db)
         return render_template('lobby.html', game=game)
-    #Otherwise get current game
-    if new_game is None:
-        #Get existing game
+    #Else get current game
+    else:
+        #Get existing game dict from db
         game_db = db.collection.find_one({'game_id': game_id})
-        #Check to make sure that player doesn't already exist
-        curr_players = game_db['players']
-        if player.player_name in [p['player_name'] for p in curr_players]:
-            return render_template("home.html", valid='Player name already taken, please pick a new one')
-        #Add new player
-        curr_players.append(player.toDict())
-        filter = {'_id': game_db['_id']}
-        update_fields = {'$set': {'players': curr_players}}
-        # Update the document
-        result = db.collection.update_one(filter, update_fields, upsert=False)
-
-        #Get game obj
-        game = gameObj(player, game_db=game_db)
-        #Update game dictionary
+        #Specified user name might already be taken
+        success, message = checkExistingPlayer(player, game_db)
+        if not success:
+            return render_template("home.html", valid=message)        
+        #Update game db with new user and get updated game obj
+        game = startExistingGame(player, game_db, db)
         return render_template('lobby.html', game=game)
 
 @app.get("/update/<int:todo_id>")
