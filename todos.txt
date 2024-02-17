@@ -1,2 +1,4 @@
 - if a user enters an existing name for that game, give option to join as that user
 - save flask app secret as env var
+- move configs with passwords etc
+- add primary game id key to mongo?

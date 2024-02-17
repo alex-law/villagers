@@ -1,5 +1,5 @@
 from flask import request
-from villageObjects import gameObj, playerObj
+from logic import game_logic
 
 def getUserInput():
     player_name = request.form.get("player_name")
@@ -26,31 +26,29 @@ def validateInput(player_name, game_id, new_game, db):
     
 def startNewGame(player, game_id, db):
     #Initiate game obj
-    game = gameObj(player=player, init_game_id=game_id)
+    game = game_logic.initialiseDict(game_id, player)
     #save game to db
-    game._id = db.collection.insert_one(game.gameToDict()).inserted_id
+    game['_id'] = db.collection.insert_one(game).inserted_id
     return game
 
-def checkExistingPlayer(player, game_db):
+def checkExistingPlayer(player, game):
     #Check to make sure that player doesn't already exist
-    curr_players = game_db['players']
-    if player.player_name in [p['player_name'] for p in curr_players]:
+    curr_players = game['players']
+    if player['player_name'] in [p['player_name'] for p in curr_players]:
         return False, 'Player name already taken, please pick a new one'
     else:
         return True, ''
 
-def startExistingGame(player, game_db, db):
+def startExistingGame(player, game, db):
     #Add new player
-    game_db['players'].append(player.toDict())
-    filter = {'_id': game_db['_id']}
-    update_fields = {'$set': {'players': game_db['players']}}
+    game['players'].append(player)
+    filter = {'_id': game['_id']}
+    update_fields = {'$set': {'players': game['players']}}
     # Update the document
     result = db.collection.update_one(filter, update_fields, upsert=False)
     # Check if the update was successful
     if result.matched_count > 0:
-        print(f"Successfully updated document with _id {game_db['_id']}")
+        print(f"Successfully updated document with _id {game['_id']}")
     else:
-        print(f"No document found with _id {game_db['_id']}")
-    #Get game obj
-    game = gameObj(game_db=game_db)
+        print(f"No document found with _id {game['_id']}")
     return game

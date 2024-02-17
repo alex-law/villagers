@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from mongoCommands import dbObj
+from logic.mongo_db.mongoCommands import dbObj
 from bson import ObjectId
-from villageObjects import gameObj, playerObj
 
-from settup import getConfig
-from logic.start_game import (getUserInput, validateInput, startNewGame,
+from logic.settup.initialise import getConfig
+from logic.settup.start_game import (getUserInput, validateInput, startNewGame,
                               checkExistingPlayer, startExistingGame)
+from logic import game_logic, player_logic
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -19,7 +19,7 @@ def home():
     return render_template("home.html", valid='')
 
 @app.get("/game")
-def game():
+def game_logic():
     return render_template("game.html")
 
 @app.get("/play")
@@ -42,28 +42,28 @@ def newGame():
     if not success:
         return render_template("home.html", valid=message)
     #Made it past all this so initiate player obj
-    player = playerObj(player_name)
+    player = player_logic.initialiseDict(player_name)
     #Start a new game
     if new_game:
         game = startNewGame(player, game_id, db)
         # Save mongo db id and player name to session so we can access later
-        session['_id'] = str(game._id)
-        session['player_name'] = player.player_name
-        return render_template('lobby.html', game=game_db)
+        session['_id'] = str(game['_id'])
+        session['player_name'] = player['player_name']
+        return render_template('lobby.html', game=game)
     #Else get current game
     else:
         #Get existing game dict from db
-        game_db = db.collection.find_one({'game_id': game_id})
+        game = db.collection.find_one({'game_id': game_id})
         #Specified user name might already be taken
-        success, message = checkExistingPlayer(player, game_db)
+        success, message = checkExistingPlayer(player, game)
         if not success:
             return render_template("home.html", valid=message)        
         #Update game db with new user and get updated game obj
-        game = startExistingGame(player, game_db, db)
+        game = startExistingGame(player, game, db)
         # Save mongo db id and player name to session so we can access later
-        session['_id'] = str(game._id)
-        session['player_name'] = player.player_name
-        return render_template('lobby.html', game=game_db)
+        session['_id'] = str(game['_id'])
+        session['player_name'] = player['player_name']
+        return render_template('lobby.html', game=game)
 
 @app.get("/update/<int:todo_id>")
 def update(todo_id):
