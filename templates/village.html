@@ -1,0 +1,133 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#voteButton").click(function(){
+        // Get the value from the input field
+        var vote = $("#vote").val();
+        // Ensure gameId is not empty
+        if(vote) {
+            $.ajax({
+                url: '/update_game',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ vote: vote }),
+                success: function(response) {
+                    // Assume the response includes a 'success' boolean property
+                    if(response.success) {
+                        // Change color to green if successful
+                        $("#voteButton").css("color", "green");
+                        $(".featured-player").css("border-color", "green");
+                    } else {
+                        // Change color to red if not successful
+                        $("#voteButton").css("color", "red");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(error); // Example error handling
+                    alert("Error updating vote info.");
+                }
+            });
+        } else {
+            alert("Please enter a vote.");
+        }
+    });
+});
+</script>
+    
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Update Example</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            
+            socket.on('update_ui', (data) => {
+                // Update the border color of the element when the 'update_ui' event is received
+                document.getElementById('featured-player').style.borderColor = data.borderColor;
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="featured-player" style="border: 2px solid black; padding: 20px; width: 200px; margin: 20px;">
+        <p>Featured Player</p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Player Stats</title>
+    <style>
+        .player-square {
+            width: 100px;
+            height: 100px;
+            border: 2px solid black;
+            margin: 5px;
+            display: inline-block;
+        }
+        .featured-player {
+            border: 2px solid gold;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+
+    <title>WebSocket Update Example</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            
+            socket.on('update_ui', (data) => {
+                // Update the border color of the element when the 'update_ui' event is received
+                document.getElementById('player-square').style.borderColor = data.borderColor;
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <p>Game Status: {{ game['status'] }}</p>
+        <!-- Featured Player -->
+        <div class="player-square featured-player">
+            <h3>{{ player['player_name'] }}</h3>
+            <p>Character: {{ player['character'] }}</p>
+            <!-- Example of a different stat for the featured player -->
+            <!-- <p>Special Ability: {{ players[0].special_ability }}</p> -->
+        </div>
+
+        <!-- Other Players -->
+        {% for player in players %}
+            {% if player.name != player['player_name'] %}
+            <div class="player-square">
+                <h3>{{ player['player_name'] }}</h3>
+                <!-- <p>Score: {{ player.score }}</p> -->
+                <!-- Assuming other players might not have 'special_ability' or it's displayed differently -->
+                <!-- <p>Games Played: {{ player.games_played }}</p> -->
+            </div>
+            {% endif %}
+        {% endfor %}
+        <a href="/" class="button">Return to home</a>
+    </div>
+    <input type="text" id="vote" placeholder="Enter Vote Here">
+    <button id="voteButton">Cast Vote</button>
+</body>
+</html>

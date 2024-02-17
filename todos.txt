@@ -2,3 +2,10 @@
 - save flask app secret as env var
 - move configs with passwords etc
 - add primary game id key to mongo?
+- add in more complicated rules
+- option to add and remove players
+- add in expected function variables and types
+- change db to collections where possible
+- make sure can only vote for existing players
+- error check to double check in checkVotes that vote is valid
+- user a drop down for this..
