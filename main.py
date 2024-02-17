@@ -29,8 +29,9 @@ def checkVotes(_id, player_name):
         other_players = [p for p in game['players'] if p['player_name'] != player_name]
         voted_players = [p for p in other_players if p['vote'] != '']
         if len(voted_players) > 0:
-            socketio.emit('update_ui', {'borderColor': 'red'})
-            return
+            for voted_player in voted_players:
+                socketio.emit('update_ui', {'voted_player': voted_player['player_name'], 'borderColor': 'red'})
+            # return
         time.sleep(2)
         
 
@@ -55,6 +56,7 @@ def play():
     player = [p for p in players if p['player_name'] == player_name]
     if len(player) > 1:
         raise Exception('Multiple players in game with same name')
+    other_players = [p for p in players if p['player_name'] != player_name]
     player = player[0]
     game['status'] = 'In Progress'
     db.collection.replace_one({'_id': _id}, game)
@@ -62,7 +64,7 @@ def play():
     thread = threading.Thread(target=checkVotes, args=(_id, player_name))
     thread.start()
 
-    return render_template("village.html", game=game, player=player, players=players)
+    return render_template("village.html", game=game, curr_player=player, other_players=other_players)
 
 @app.post("/newGame")
 def newGame():

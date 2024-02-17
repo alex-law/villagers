@@ -1,4 +1,5 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
 $(document).ready(function(){
     $("#voteButton").click(function(){
@@ -34,36 +35,6 @@ $(document).ready(function(){
     });
 });
 </script>
-    
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>WebSocket Update Example</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-            
-            socket.on('update_ui', (data) => {
-                // Update the border color of the element when the 'update_ui' event is received
-                document.getElementById('featured-player').style.borderColor = data.borderColor;
-            });
-        });
-    </script>
-</head>
-<body>
-    <div id="featured-player" style="border: 2px solid black; padding: 20px; width: 200px; margin: 20px;">
-        <p>Featured Player</p>
-    </div>
-</body>
-</html>
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -96,8 +67,13 @@ $(document).ready(function(){
             var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
             
             socket.on('update_ui', (data) => {
+                var voted_player = data.voted_player
+                var voted_player_div = document.getElementById(voted_player);
                 // Update the border color of the element when the 'update_ui' event is received
-                document.getElementById('player-square').style.borderColor = data.borderColor;
+                if (voted_player_div) {
+                console.log(voted_player)
+                voted_player_div.style.borderColor = data.borderColor;
+                }
             });
         });
     </script>
@@ -108,22 +84,16 @@ $(document).ready(function(){
         <p>Game Status: {{ game['status'] }}</p>
         <!-- Featured Player -->
         <div class="player-square featured-player">
-            <h3>{{ player['player_name'] }}</h3>
-            <p>Character: {{ player['character'] }}</p>
+            <h3>{{ curr_player['player_name'] }}</h3>
+            <p>Character: {{ curr_player['character'] }}</p>
             <!-- Example of a different stat for the featured player -->
-            <!-- <p>Special Ability: {{ players[0].special_ability }}</p> -->
         </div>
 
         <!-- Other Players -->
-        {% for player in players %}
-            {% if player.name != player['player_name'] %}
-            <div class="player-square">
-                <h3>{{ player['player_name'] }}</h3>
-                <!-- <p>Score: {{ player.score }}</p> -->
-                <!-- Assuming other players might not have 'special_ability' or it's displayed differently -->
-                <!-- <p>Games Played: {{ player.games_played }}</p> -->
+        {% for other_player in other_players %}
+            <div  id="{{ other_player['player_name'] }}" class="player-square">
+                <h3>{{ other_player['player_name'] }}</h3>
             </div>
-            {% endif %}
         {% endfor %}
         <a href="/" class="button">Return to home</a>
     </div>
