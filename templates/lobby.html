@@ -13,15 +13,16 @@
 <body>
     <div style="margin-top: 50px;" class="ui container">
         <p class="ui big header">You are in the lobby</p>
-        <p class="ui big header">Game status {{game.game_state}}</p>
-        <p class="ui small header">Game id {{game.game_id}}</p>
+        <p class="ui big header">Game status {{game['game_state']}}</p>
+        <p class="ui small header">Game id {{game['game_id']}}</p>
         
         <p class="ui big header">Players</p>
         <div class="ui segment">
-            {% for player in game.players %}
-            <p class="ui small header">{{player.player_name}}</p>
+            {% for player in game['players'] %}
+            <p class="ui small header">{{player['player_name']}}</p>
             {% endfor %}
         </div>
+    <a href="/play" style="background-color: green; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; border-radius: 5px;">Play</a>
     <a href="/" class="button">Return to home</a>
     </div>
 </body>

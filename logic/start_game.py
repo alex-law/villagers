@@ -26,9 +26,9 @@ def validateInput(player_name, game_id, new_game, db):
     
 def startNewGame(player, game_id, db):
     #Initiate game obj
-    game = gameObj(player, init_game_id=game_id)
+    game = gameObj(player=player, init_game_id=game_id)
     #save game to db
-    game.mongo_id = db.collection.insert_one(game.gameToDict()).inserted_id
+    game._id = db.collection.insert_one(game.gameToDict()).inserted_id
     return game
 
 def checkExistingPlayer(player, game_db):
@@ -48,9 +48,9 @@ def startExistingGame(player, game_db, db):
     result = db.collection.update_one(filter, update_fields, upsert=False)
     # Check if the update was successful
     if result.matched_count > 0:
-        print(f"Successfully updated document with mongo_id {game_db['_id']}")
+        print(f"Successfully updated document with _id {game_db['_id']}")
     else:
-        print(f"No document found with mongo_id {game_db['_id']}")
+        print(f"No document found with _id {game_db['_id']}")
     #Get game obj
-    game = gameObj(player, game_db=game_db)
+    game = gameObj(game_db=game_db)
     return game

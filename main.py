@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from mongoCommands import dbObj
+from bson import ObjectId
 from villageObjects import gameObj, playerObj
 
 from settup import getConfig
-from logic.start_game import (getUserInput, validateInput,
+from logic.start_game import (getUserInput, validateInput, startNewGame,
                               checkExistingPlayer, startExistingGame)
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 config = getConfig()
 db = dbObj(config)
@@ -19,6 +21,16 @@ def home():
 @app.get("/game")
 def game():
     return render_template("game.html")
+
+@app.get("/play")
+def play():
+    _id = ObjectId(session.get('_id', None))
+    player_name = session.get('player_name', None)
+    game_db = db.collection.find_one({'_id': _id})
+    game = gameObj(game_db=game_db)
+    player = [p for p in game.players if p.player_name == player_name]
+    
+    print('hold')
 
 @app.post("/newGame")
 def newGame():
@@ -33,8 +45,11 @@ def newGame():
     player = playerObj(player_name)
     #Start a new game
     if new_game:
-        game = newGame(player, game_id, db)
-        return render_template('lobby.html', game=game)
+        game = startNewGame(player, game_id, db)
+        # Save mongo db id and player name to session so we can access later
+        session['_id'] = str(game._id)
+        session['player_name'] = player.player_name
+        return render_template('lobby.html', game=game_db)
     #Else get current game
     else:
         #Get existing game dict from db
@@ -45,7 +60,10 @@ def newGame():
             return render_template("home.html", valid=message)        
         #Update game db with new user and get updated game obj
         game = startExistingGame(player, game_db, db)
-        return render_template('lobby.html', game=game)
+        # Save mongo db id and player name to session so we can access later
+        session['_id'] = str(game._id)
+        session['player_name'] = player.player_name
+        return render_template('lobby.html', game=game_db)
 
 @app.get("/update/<int:todo_id>")
 def update(todo_id):
