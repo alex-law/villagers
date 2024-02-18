@@ -9,3 +9,4 @@
 - make sure can only vote for existing players
 - error check to double check in checkVotes that vote is valid
 - user a drop down for this..
+- once one person presses play, needs to go to play screen for all players

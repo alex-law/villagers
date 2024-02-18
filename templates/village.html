@@ -8,7 +8,7 @@ $(document).ready(function(){
         // Ensure gameId is not empty
         if(vote) {
             $.ajax({
-                url: '/update_game',
+                url: '/castVote',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ vote: vote }),
@@ -97,7 +97,14 @@ $(document).ready(function(){
         {% endfor %}
         <a href="/" class="button">Return to home</a>
     </div>
-    <input type="text" id="vote" placeholder="Enter Vote Here">
+
+    <select id="vote">
+        <option value="" disabled selected>Select a player</option>
+        {% for player in other_players %}
+          <option value="{{ player['player_name'] }}">{{ player['player_name'] }}</option>
+        {% endfor %}
+    </select>
     <button id="voteButton">Cast Vote</button>
+
 </body>
 </html>

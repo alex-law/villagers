@@ -1,5 +1,5 @@
 from flask import request
-from logic import game_logic
+from logic import game_logic, player_logic
 
 def getUserInput():
     player_name = request.form.get("player_name")
@@ -34,18 +34,15 @@ def startNewGame(player, game_id, db):
 def checkExistingPlayer(player, game):
     #Check to make sure that player doesn't already exist
     curr_players = game['players']
-    if player['player_name'] in [p['player_name'] for p in curr_players]:
+    if player['player_name'] in [*curr_players]:
         return False, 'Player name already taken, please pick a new one'
     else:
         return True, ''
 
 def startExistingGame(player, game, db):
     #Add new player
-    game['players'].append(player)
-    filter = {'_id': game['_id']}
-    update_fields = {'$set': {'players': game['players']}}
-    # Update the document
-    result = db.collection.update_one(filter, update_fields, upsert=False)
+    game['players'][player['player_name']] = player
+    result = player_logic.updateMongoPlayer(game, player, db)
     # Check if the update was successful
     if result.matched_count > 0:
         print(f"Successfully updated document with _id {game['_id']}")

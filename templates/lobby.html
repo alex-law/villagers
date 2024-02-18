@@ -18,7 +18,7 @@
         
         <p class="ui big header">Players {{game['players'] | length}}</p>
         <div class="ui segment">
-            {% for player in game['players'] %}
+            {% for player in game['players'].values() %}
             <p class="ui small header">{{player['player_name']}}</p>
             {% endfor %}
         </div>

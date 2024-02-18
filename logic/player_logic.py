@@ -13,11 +13,31 @@ def initialiseDict(player_name, character=''):
 
 def assignCharacters(players):
     # Shuffle to randomly assign characters
-    random.shuffle(players)
+    shuffled_player_names = [*players]
+    random.shuffle(shuffled_player_names)
     #Want roughly 20% of players to be wolfs rounding up
     wolf_count = math.ceil(len(players)*0.2)
-    for c in range(0, wolf_count):
-        players[c]['character'] = 'wolf'
-    for c in range(wolf_count, len(players)):
-        players[c]['character'] = 'villager'
+    for p in shuffled_player_names[:wolf_count]:
+        players[p]['character'] = 'wolf'
+    for p in shuffled_player_names[wolf_count:]:
+        players[p]['character'] = 'villager'
     return players
+
+def updateMongoPlayer(game, player, db):
+    filter = {'_id': game['_id']}
+    update_fields = {
+            '$set': {
+                f'players.{player["player_name"]}': player
+                }
+        }
+    # Update the document
+    result = db.collection.update_one(filter, update_fields, upsert=False)
+    return result
+
+def getLooser():
+    pass
+
+def getPlayersFromSession(session, game):
+    player_name = session.get('player_name', None)
+    players = game['players']
+    return players, player_name
