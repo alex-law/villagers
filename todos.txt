@@ -10,3 +10,6 @@
 - error check to double check in checkVotes that vote is valid
 - user a drop down for this..
 - once one person presses play, needs to go to play screen for all players
+- what happens if multiple users press a button at the same time, ie like play?
+- add in pipeline and tests etc
+- replace ajax cast vote with web sockets call

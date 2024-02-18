@@ -54,6 +54,10 @@ $(document).ready(function(){
         .featured-player {
             border: 2px solid gold;
         }
+        .dead-player {
+            border: 5px solid black;
+            fill: grey;
+        }
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -66,45 +70,76 @@ $(document).ready(function(){
         document.addEventListener('DOMContentLoaded', (event) => {
             var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
             
-            socket.on('update_ui', (data) => {
+            socket.on('update_player_vote', (data) => {
                 var voted_player = data.voted_player
                 var voted_player_div = document.getElementById(voted_player);
-                // Update the border color of the element when the 'update_ui' event is received
+                // Update the border color of the element when the 'update_player_vote' event is received
                 if (voted_player_div) {
                 console.log(voted_player)
                 voted_player_div.style.borderColor = data.borderColor;
                 }
+            });
+
+            socket.on('update_village', function(data) {
+                // Update webpage content
+                document.getElementById('content').innerHTML = data.html
             });
         });
     </script>
 
 </head>
 <body>
+<div id="content">
+
     <div class="container">
         <p>Game Status: {{ game['status'] }}</p>
+        <p>Round: {{ game['round'] }}</p>
+        <p>Stage: {{ game['stage'] }}</p>
         <!-- Featured Player -->
-        <div class="player-square featured-player">
+        <div class="player-square featured-player{{ ' dead-player' if curr_player['is_dead'] else '' }}">
             <h3>{{ curr_player['player_name'] }}</h3>
             <p>Character: {{ curr_player['character'] }}</p>
             <!-- Example of a different stat for the featured player -->
         </div>
 
-        <!-- Other Players -->
-        {% for other_player in other_players %}
-            <div  id="{{ other_player['player_name'] }}" class="player-square">
-                <h3>{{ other_player['player_name'] }}</h3>
+        <!-- Other Alive Players -->
+        {% for alive_player in alive_players %}
+            <div  id="{{ alive_player['player_name'] }}" class="player-square">
+                <h3>{{ alive_player['player_name'] }}</h3>
+            </div>
+        {% endfor %}
+        <a href="/" class="button">Return to home</a>
+
+        <!-- Other Dead Players -->
+        {% for dead_player in dead_players %}
+            <div  id="{{ dead_player['player_name'] }}" class="player-square dead-player">
+                <h3>{{ dead_player['player_name'] }}</h3>
+                <p>You were killed</p>
             </div>
         {% endfor %}
         <a href="/" class="button">Return to home</a>
     </div>
 
-    <select id="vote">
-        <option value="" disabled selected>Select a player</option>
-        {% for player in other_players %}
-          <option value="{{ player['player_name'] }}">{{ player['player_name'] }}</option>
-        {% endfor %}
-    </select>
-    <button id="voteButton">Cast Vote</button>
+    {% if game['stage'] == 'day' %}
+        <select id="vote">
+            <option value="" disabled selected>Who do you think is a wolf?</option>
+            {% for alive_player in alive_players %}
+            <option value="{{ alive_player['player_name'] }}">{{ alive_player['player_name'] }}</option>
+            {% endfor %}
+        </select>
+        <button id="voteButton">Cast Vote</button>
 
+    {% elif game['stage'] == 'night' %}
+        {% if curr_player['character'] == 'wolf' %}
+        <select id="vote">
+            <option value="" disabled selected>Who do you want to kill</option>
+            {% for alive_villager in alive_villagers %}
+            <option value="{{ alive_villager['player_name'] }}">{{ alive_villager['player_name'] }}</option>
+            {% endfor %}
+        </select>
+        <button id="voteButton">Cast Vote</button>
+        {% endif %}
+    {% endif %}
+</div>
 </body>
 </html>
