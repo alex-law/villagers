@@ -1,0 +1,43 @@
+/* Global Styles */
+body {
+    font-family: 'Courier New', Courier, monospace; /* Typewriter-like font */
+}
+
+/* Status Bar Styling */
+.status-bar {
+    background-color: #f0f0f0; /* Light grey background */
+    padding: 10px 20px; /* Padding around the text */
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-around; /* Distribute space evenly around items */
+    align-items: center; /* Center items vertically */
+    border-bottom: 2px solid #dcdcdc; /* Add a subtle border at the bottom */
+}
+
+.status-bar p {
+    margin: 0; /* Remove default paragraph margin */
+    font-weight: bold; /* Make text bold */
+}
+
+.status-bar span {
+    font-weight: normal; /* Normal text for values */
+}
+
+/* Players */
+.player-square {
+    width: 100px;
+    height: 100px;
+    border: 2px solid black;
+    margin: 5px;
+    display: inline-block;
+}
+.featured-player {
+    border: 2px solid gold;
+}
+.dead-player {
+    border: 5px solid black;
+    fill: grey;
+}
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}

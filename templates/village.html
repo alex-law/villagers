@@ -5,80 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Player Stats</title>
-    <style>
-        .player-square {
-            width: 100px;
-            height: 100px;
-            border: 2px solid black;
-            margin: 5px;
-            display: inline-block;
-        }
-        .featured-player {
-            border: 2px solid gold;
-        }
-        .dead-player {
-            border: 5px solid black;
-            fill: grey;
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-        }
-    </style>
+    <title>Villagers Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    <title>WebSocket Update Example</title>
+    <title>WebSocket Scripts</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-            
-
-            document.querySelector("#voteButton").onclick = function() {
-                var vote = document.querySelector("#vote").value;
-                if(vote) {
-                    socket.emit('castVote', {vote: vote});
-                } else {
-                    alert("Please enter a vote.");
-                }
-            };
-
-            socket.on('voteResponse', function(data) {
-                if(data.success) {
-                    document.querySelector("#voteButton").style.color = "green";
-                    document.querySelectorAll(".featured-player").forEach(function(element) {
-                        element.style.borderColor = "green";
-                    });
-                } else {
-                    document.querySelector("#voteButton").style.color = "purple";
-                }
-            });
-
-            socket.on('update_player_vote', (data) => {
-                var voted_player = data.voted_player
-                var voted_player_div = document.getElementById(voted_player);
-                // Update the border color of the element when the 'update_player_vote' event is received
-                if (voted_player_div) {
-                console.log(voted_player)
-                voted_player_div.style.borderColor = data.borderColor;
-                }
-            });
-
-            socket.on('update_village', function(data) {
-                // Update webpage content
-                document.getElementById('content').innerHTML = data.html
-            });
-        });
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     </script>
+
+
 
 </head>
 <body>
 <div id="content">
 
+    <!-- Status Bar at the Top -->
+    <div class="status-bar">
+        <p>Game Status: <span>{{ game['status'] }}</span></p>
+        <p>Round: <span>{{ game['round'] }}</span></p>
+        <p>Stage: <span>{{ game['stage'] }}</span></p>
+    </div>
+
     <div class="container">
-        <p>Game Status: {{ game['status'] }}</p>
-        <p>Round: {{ game['round'] }}</p>
-        <p>Stage: {{ game['stage'] }}</p>
         <!-- Featured Player -->
         {% if curr_player['status'] == 'alive' %}
             <div class="player-square featured-player">
@@ -100,7 +48,6 @@
                 <h3>{{ alive_player['player_name'] }}</h3>
             </div>
         {% endfor %}
-        <a href="/" class="button">Return to home</a>
 
         <!-- Other Dead Players -->
         {% for dead_player in dead_players %}
@@ -109,6 +56,7 @@
                 <p>You were killed</p>
             </div>
         {% endfor %}
+
         <a href="/" class="button">Return to home</a>
     </div>
 
