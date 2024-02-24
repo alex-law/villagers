@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -11,6 +8,7 @@
             "module": "flask",
             "env": {
                 "FLASK_APP": "main.py",
+                "FLASK_ENV": "development",
                 "FLASK_DEBUG": "1"
             },
             "args": [
@@ -20,8 +18,22 @@
                 "--port",
                 "8000"
             ],
-            "jinja": true,
-            "justMyCode": true
+            "jinja": true
+        },
+        {
+            "name": "Launch Chrome against localhost",
+            "type": "pwa-msedge",
+            "request": "launch",
+            "url": "http://localhost:8000", // Ensure this matches the Flask app's URL
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            "breakpoints": "all"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Flask + Chrome Debug",
+            "configurations": ["Python: Flask", "Launch Chrome against localhost"]
         }
     ]
 }
