@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (voted_player_div) {
         console.log(voted_player)
         voted_player_div.style.borderColor = data.borderColor;
+        voted_player_div.style.backgroundColor = data.fillColor
         }
     });
 

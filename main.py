@@ -13,6 +13,8 @@ from logic import game_logic, player_logic
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SECRET_KEY'] = 'secret'
+app.config['APPLICATION_ROOT'] = './'
+app.config['PREFERRED_URL_SCHEME'] = 'http'
 socketio = SocketIO(app)
 
 config = getConfig()
@@ -36,7 +38,7 @@ def checkVotes(_id, player_name):
         if game['stage'] == 'day':
             if len(voted_alive_players) > 0:
                 for voted_player in voted_alive_players:
-                    socketio.emit('update_player_vote', {'voted_player': voted_player['player_name'], 'borderColor': 'red'})
+                    socketio.emit('update_player_vote', {'voted_player': voted_player['player_name'], 'borderColor': 'green', 'fillColor': 'lightgreen'})
         #Once all players have voted, then ready to move onto next round
         # Wait for all players to vote if playing during day
         # Wait for all wolfs to vote if playing during night

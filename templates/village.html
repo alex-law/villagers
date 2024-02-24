@@ -13,11 +13,13 @@
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     </script>
 
-
+    <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
 
 </head>
 <body>
 <div id="content">
+
+    <h1 id="villagers-heading">Villagers</h1>
 
     <!-- Status Bar at the Top -->
     <div class="status-bar">
@@ -56,8 +58,6 @@
                 <p>You were killed</p>
             </div>
         {% endfor %}
-
-        <a href="/" class="button">Return to home</a>
     </div>
 
     {% if game['stage'] == 'day' %}
@@ -80,6 +80,9 @@
         <button id="voteButton">Cast Vote</button>
         {% endif %}
     {% endif %}
+
+    <a href="/" class="button">Return to home</a>
+
 </div>
 </body>
 </html>
