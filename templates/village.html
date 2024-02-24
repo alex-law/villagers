@@ -1,44 +1,7 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<script>
-$(document).ready(function(){
-    $("#voteButton").click(function(){
-        // Get the value from the input field
-        var vote = $("#vote").val();
-        // Ensure gameId is not empty
-        if(vote) {
-            $.ajax({
-                url: '/castVote',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ vote: vote }),
-                success: function(response) {
-                    // Assume the response includes a 'success' boolean property
-                    if(response.success) {
-                        // Change color to green if successful
-                        $("#voteButton").css("color", "green");
-                        $(".featured-player").css("border-color", "green");
-                    } else {
-                        // Change color to red if not successful
-                        $("#voteButton").css("color", "red");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    // Handle error
-                    console.error(error); // Example error handling
-                    alert("Error updating vote info.");
-                }
-            });
-        } else {
-            alert("Please enter a vote.");
-        }
-    });
-});
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -70,6 +33,27 @@ $(document).ready(function(){
         document.addEventListener('DOMContentLoaded', (event) => {
             var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
             
+
+            document.querySelector("#voteButton").onclick = function() {
+                var vote = document.querySelector("#vote").value;
+                if(vote) {
+                    socket.emit('castVote', {vote: vote});
+                } else {
+                    alert("Please enter a vote.");
+                }
+            };
+
+            socket.on('voteResponse', function(data) {
+                if(data.success) {
+                    document.querySelector("#voteButton").style.color = "green";
+                    document.querySelectorAll(".featured-player").forEach(function(element) {
+                        element.style.borderColor = "green";
+                    });
+                } else {
+                    document.querySelector("#voteButton").style.color = "purple";
+                }
+            });
+
             socket.on('update_player_vote', (data) => {
                 var voted_player = data.voted_player
                 var voted_player_div = document.getElementById(voted_player);
@@ -96,12 +80,20 @@ $(document).ready(function(){
         <p>Round: {{ game['round'] }}</p>
         <p>Stage: {{ game['stage'] }}</p>
         <!-- Featured Player -->
-        <div class="player-square featured-player{{ ' dead-player' if curr_player['is_dead'] else '' }}">
-            <h3>{{ curr_player['player_name'] }}</h3>
-            <p>Character: {{ curr_player['character'] }}</p>
-            <!-- Example of a different stat for the featured player -->
-        </div>
-
+        {% if curr_player['status'] == 'alive' %}
+            <div class="player-square featured-player">
+                <h3>{{ curr_player['player_name'] }}</h3>
+                <p>Character: {{ curr_player['character'] }}</p>
+                <!-- Example of a different stat for the featured player -->
+            </div>
+        {% else %}
+            <div class="player-square featured-player dead-player">
+                <h3>{{ curr_player['player_name'] }}</h3>
+                <p>Character: {{ curr_player['character'] }}</p>
+                <p>You were killed</p>
+                <!-- Example of a different stat for the featured player -->
+            </div>
+        {% endif %}
         <!-- Other Alive Players -->
         {% for alive_player in alive_players %}
             <div  id="{{ alive_player['player_name'] }}" class="player-square">

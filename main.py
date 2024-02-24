@@ -3,7 +3,7 @@ from logic.mongo_db.mongoCommands import dbObj
 from bson import ObjectId
 import threading
 import time
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 
 from logic.settup.initialise import getConfig
 from logic.settup.start_game import (getUserInput, validateInput, startNewGame,
@@ -25,6 +25,8 @@ def home():
 
 
 def checkVotes(_id, player_name):
+    #Give webpage time to load and villagers to vote before starting to count
+    time.sleep(3)
     while True:
         game = db.collection.find_one({'_id': _id})
 
@@ -50,26 +52,18 @@ def checkVotes(_id, player_name):
             with app.app_context():
                 rendered_template = render_template("village.html", game=game, curr_player=player, alive_players=alive_players, alive_villagers=alive_villagers, dead_players=dead_players)
             socketio.emit('update_village', {'html': rendered_template})
-
-
         time.sleep(1)
 
 
-@app.route('/castVote', methods=['POST'])
-def castVote():
-    if request.is_json:
-        data = request.get_json()
-        vote = data.get('vote')
-        game, _id = game_logic.getGameFromSession(session, db)
-        players, player_name = player_logic.getPlayersFromSession(session, game)
-        voted_player = players[player_name]
-        voted_player['vote'] = vote
-        result = player_logic.updateMongoPlayer(game, voted_player, db)
-        # Process the game_id as needed...
-        return jsonify({"success": True, "message": "Game info updated with vote: " + vote})
-    else:
-        return jsonify({"success": False, "message": "Request body must be JSON."}), 400
-
+@socketio.on('castVote')
+def castVote(vote_data):
+    vote = vote_data['vote']
+    game, _id = game_logic.getGameFromSession(session, db)
+    players, player_name = player_logic.getPlayersFromSession(session, game)
+    voted_player = players[player_name]
+    voted_player['vote'] = vote
+    result = player_logic.updateMongoPlayer(game, voted_player, db)
+    emit('voteResponse', {'success': True})
 
 @app.get("/firstPlay")
 def firstPlay():
