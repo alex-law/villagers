@@ -1,9 +1,6 @@
 /* Global Styles */
-body {
-    font-family: 'Courier New', Courier, monospace; /* Typewriter-like font */
-}
 
-button, input[type="button"], input[type="submit"] {
+body, button, input, textarea, select {
     font-family: 'Courier New', Courier, monospace;
 }
 

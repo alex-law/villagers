@@ -38,7 +38,7 @@ def checkVotes(_id, player_name):
         if game['stage'] == 'day':
             if len(voted_alive_players) > 0:
                 for voted_player in voted_alive_players:
-                    socketio.emit('update_player_vote', {'voted_player': voted_player['player_name'], 'borderColor': 'green', 'fillColor': 'lightgreen'})
+                    socketio.emit('update_player_vote', {'voted_player': voted_player['player_name']})
         #Once all players have voted, then ready to move onto next round
         # Wait for all players to vote if playing during day
         # Wait for all wolfs to vote if playing during night
@@ -65,7 +65,7 @@ def castVote(vote_data):
     voted_player = players[player_name]
     voted_player['vote'] = vote
     result = player_logic.updateMongoPlayer(game, voted_player, db)
-    emit('voteResponse', {'success': True})
+    emit('voteResponse', {'success': True, 'voted_player': vote})
 
 @app.get("/firstPlay")
 def firstPlay():

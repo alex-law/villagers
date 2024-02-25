@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
             document.querySelectorAll(".featured-player").forEach(function(element) {
                 element.style.borderColor = "green";
             });
+            document.querySelectorAll(".featured-player").forEach(function(element) {
+                element.style.backgroundColor = "lightgreen";
+            });
+            document.getElementById('voteButton').disabled = true;
+            var message = "You voted for: " + data.voted_player;
+            document.getElementById('voteResultMessage').innerText = message;
         } else {
             document.querySelector("#voteButton").style.color = "purple";
         }
@@ -27,8 +33,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         // Update the border color of the element when the 'update_player_vote' event is received
         if (voted_player_div) {
         console.log(voted_player)
-        voted_player_div.style.borderColor = data.borderColor;
-        voted_player_div.style.backgroundColor = data.fillColor
+        voted_player_div.style.borderColor = 'green';
+        voted_player_div.style.backgroundColor = 'lightgreen'
         }
     });
 

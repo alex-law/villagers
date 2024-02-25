@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Villagers App</title>
-
+    <title>Villagers Game</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div style="margin-top: 50px;" class="ui container">
-        <p class="ui big header">You are in the lobby</p>
-        <p class="ui big header">Game status {{game['game_state']}}</p>
-        <p class="ui small header">Game id {{game['game_id']}}</p>
-        
-        <p class="ui big header">Players {{game['players'] | length}}</p>
+    <div class="ui container centered-text">
+        <h1 class="ui small header">You are in the lobby</h1>
+        <h2 class="ui small header">Game status: {{game['status']}}</h2>
+        <h3 class="ui small header">Game id: {{game['game_id']}}</h3>
+        <h2 class="ui small header">Players: {{game['players'] | length}}</h2>
         <div class="ui segment">
             {% for player in game['players'].values() %}
             <p class="ui small header">{{player['player_name']}}</p>
             {% endfor %}
         </div>
-    {% if game['players'] | length < 3 %}
-        <p class="ui small header">Need more than 3 players. please add more players</p>
-    {% elif game['players'] | length > 10 %}
-        <p class="ui small header">Need less than 10 players. please remove players</p>
-    {% endif %}
-    <a href="/firstPlay" style="background-color: green; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; border-radius: 5px;">Play</a>
-    <a href="/" class="button">Return to home</a>
+        {% if game['players'] | length < 3 %}
+            <p class="ui small header">Need more than 3 players. Please add more players.</p>
+        {% elif game['players'] | length > 10 %}
+            <p class="ui small header">Need less than 10 players. Please remove players.</p>
+        {% endif %}
+        <a href="/firstPlay" class="button">Play</a>
+        <footer>
+            <a href="/" class="ui button return-home">Return to home</a>
+        </footer>
     </div>
 </body>
-
 </html>

@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Villagers Game</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="./static/css/styles.css">
 
     <title>WebSocket Scripts</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="./static/js/app.js"></script>
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
@@ -80,8 +80,8 @@
         <button id="voteButton">Cast Vote</button>
         {% endif %}
     {% endif %}
-
     <a href="/" class="button">Return to home</a>
+    <div id="voteResultMessage"></div>
 
 </div>
 </body>
