@@ -1,0 +1,2 @@
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
+.\venv\Scripts\activate

@@ -1,25 +1,34 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from logic.mongo_db.mongoCommands import dbObj
 from bson import ObjectId
+import os
+import sys
+import logging
 import threading
 import time
 from flask_socketio import SocketIO, emit
 
-from logic.settup.initialise import getConfig
 from logic.settup.start_game import (getUserInput, validateInput, startNewGame,
                               checkExistingPlayer, startExistingGame)
 from logic import game_logic, player_logic
+
+handler = logging.StreamHandler(sys.stderr)
+handler.setLevel(logging.INFO)
+logging.getLogger().addHandler(handler)
+logging.getLogger().setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SECRET_KEY'] = 'secret'
 app.config['APPLICATION_ROOT'] = './'
 app.config['PREFERRED_URL_SCHEME'] = 'http'
-socketio = SocketIO(app)
 
-config = getConfig()
-db = dbObj(config)
+app.logger.handlers = logging.getLogger().handlers
+app.logger.setLevel(logging.INFO)
 
+socketio = SocketIO(app)#, logger=True, engineio_logger=True)
+
+db = dbObj()
 
 @app.get("/")
 def home():
@@ -67,6 +76,7 @@ def castVote(vote_data):
     result = player_logic.updateMongoPlayer(game, voted_player, db)
     emit('voteResponse', {'success': True, 'voted_player': vote})
 
+
 @app.get("/firstPlay")
 def firstPlay():
     
@@ -82,6 +92,7 @@ def firstPlay():
     thread = threading.Thread(target=checkVotes, args=(_id, player_name))
     thread.start()
     return render_template("village.html", game=game, curr_player=player, alive_players=alive_players, alive_villagers=alive_villagers, dead_players=dead_players)
+
 
 @app.post("/newGame")
 def newGame():
@@ -121,5 +132,21 @@ def newGame():
     # session['player_name'] = 'craig'
     # return render_template('lobby.html', game=game)
 
+print('above name = main', flush=True)
+
+
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    print('in name = main', flush=True)
+    if os.getenv('IN_DOCKER') != 'YES':
+        logging.info('LOGGING: Running in debug mode')
+        print('PRINT: Running in debug mode')
+        print('PRINT FLUSH: Running in debug mode', flush=True)
+        app.logger.info('APP LOGGER: Running in debug mode')
+        socketio.run(app, debug=True)
+else:
+    logging.info('LOGGING: Running in prod mode')
+#     print('PRINT: Running in prod mode')
+#     app.logger.info('APP LOGGER: Running in prod mode')
+#     print('PRINT FLUSH: Running in prod mode', flush=True)
+#     # socketio.run(app, debug=False, host='0.0.0.0', port=5000)
+#     gunicorn_app = socketio()
