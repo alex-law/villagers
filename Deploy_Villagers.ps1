@@ -1,0 +1,2 @@
+sam package --template-file CF_template.yml --s3-bucket alex-law-personal-cloud-formation --output-template-file CF_template.packaged.yml --profile dev --region eu-west-2
+sam deploy --template-file CF_template.packaged.yml --stack-name villagers --capabilities CAPABILITY_NAMED_IAM --profile dev --region eu-west-2

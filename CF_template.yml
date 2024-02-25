@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy Flask app and MongoDB on ECS
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: FlaskMongoCluster
+
+  FlaskTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: flask-mongo-task
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref ECSExecutionRole
+      ContainerDefinitions:
+        - Name: flask-app
+          Image: 590184003877.dkr.ecr.eu-west-2.amazonaws.com/villagers/flask:latest
+          Cpu: 128
+          Memory: 256
+          PortMappings:
+            - ContainerPort: 5000
+          Environment:
+            - Name: MONGO_URI
+              Value: mongodb://mongo:27017/dbname
+          Essential: true
+        - Name: mongo
+          Image: 590184003877.dkr.ecr.eu-west-2.amazonaws.com/villagers/mongo:latest
+          Cpu: 128
+          Memory: 256
+          Essential: true
+
+  ECSExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: AmazonECSTaskExecutionRolePolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:StartTask
+                  - ecs:StopTask
+                  - ecs:DescribeTasks
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  ECSFargateService:
+    Type: AWS::ECS::Service
+    DependsOn: FlaskTaskDefinition
+    Properties:
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref FlaskTaskDefinition
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - subnet-01b4a9fdfa49404af
+            - subnet-013fbb23ba82595cb
+            - subnet-08fb59296f3a1ad7c
+          SecurityGroups:
+            - sg-00c8d89b802ad335d
+          AssignPublicIp: ENABLED
