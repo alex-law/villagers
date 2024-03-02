@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: alexlaw/villagersflaskapp:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: IN_DOCKER
+          value: "YES"
+        - name: MONGO_URI
+          value: "mongodb://root:rootpassword@mongodb-service:27017/"

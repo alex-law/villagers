@@ -13,3 +13,4 @@
 - what happens if multiple users press a button at the same time, ie like play?
 - add in pipeline and tests etc
 - replace ajax cast vote with web sockets call
+- split scripts depending on html page to stop scripts getting called that error straight away and can't run
