@@ -21,4 +21,4 @@ spec:
         - name: IN_DOCKER
           value: "YES"
         - name: MONGO_URI
-          value: "mongodb://root:rootpassword@mongodb-service:27017/"
+          value: "mongodb+srv://villagersAtlas:warewolf@villagersatlas.tnakuyj.mongodb.net/?retryWrites=true&w=majority&appName=villagersAtlas"

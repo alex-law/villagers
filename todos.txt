@@ -14,3 +14,7 @@
 - add in pipeline and tests etc
 - replace ajax cast vote with web sockets call
 - split scripts depending on html page to stop scripts getting called that error straight away and can't run
+- move docker image from public repository to aws ecr
+- make sure lobby automaticaly updates
+- redirect from new game to home page
+- show nice icon when sent as link?

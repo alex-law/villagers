@@ -6,14 +6,9 @@ class dbObj:
 
     def __init__(self):
         config = self.getConfig()
-        if os.getenv('IN_DOCKER') != 'YES':
-            url = config['MONGO_DB']['URL']
-            port = config['MONGO_DB']['PORT']
-            username = config['MONGO_DB']['USERNAME']
-            password = config['MONGO_DB']['PASSWORD']
-            login_string = f'mongodb://{username}:{password}@{url}:{port}/'
-        else:
-            login_string = os.environ.get('MONGO_URI')
+        
+        login_string = f'mongodb+srv://villagersAtlas:warewolf@villagersatlas.tnakuyj.mongodb.net/?retryWrites=true&w=majority&appName=villagersAtlas'
+        
         #Get main client
         self.client = MongoClient(login_string)
         #Now get database and collection

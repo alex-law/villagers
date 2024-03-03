@@ -1,7 +1,7 @@
 MONGO_DB:
-  URL: localhost
+  URL: mongodb+srv://villagersAtlas:<password>@villagersatlas.tnakuyj.mongodb.net/?retryWrites=true&w=majority&appName=villagersAtlas
   PORT: 27017
-  USERNAME: root
-  PASSWORD: rootpassword
+  USERNAME: villagersDbUser
+  PASSWORD: warewolf
   DB: villagers
   COL: games
