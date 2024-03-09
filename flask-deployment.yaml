@@ -15,6 +15,7 @@ spec:
       containers:
       - name: flask
         image: alexlaw/villagersflaskapp:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:

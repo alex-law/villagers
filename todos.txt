@@ -18,3 +18,6 @@
 - make sure lobby automaticaly updates
 - redirect from new game to home page
 - show nice icon when sent as link?
+
+
+- solidify user updates after one click on play, don't let new players join etc and reset character assignment

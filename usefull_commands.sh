@@ -55,4 +55,4 @@ docker build . -t villagersflaskapp:latest
 docker tag villagersflaskapp:latest alexlaw/villagersflaskapp:latest
 docker push alexlaw/villagersflaskapp:latest
 
-kubectl set image deployment/flask-deployment flask=alexlaw/villagersflaskapp:latest
+kubectl rollout restart deployment flask-deployment

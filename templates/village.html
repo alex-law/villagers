@@ -83,8 +83,139 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+<script>
+    var socket = io();
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    
+    
+    // document.querySelector("#voteButton").onclick = function() {
+    //     var vote = document.querySelector("#vote").value;
+    //     if(vote) {
+    //         socket.emit('castVote', {vote: vote});
+    //     } else {
+    //         alert("Please enter a vote.");
+    //     }
+    // };
+
+    // socket.on('voteResponse', function(data) {
+    //     if(data.success) {
+    //         document.querySelector("#voteButton").style.color = "green";
+    //         document.querySelectorAll(".featured-player").forEach(function(element) {
+    //             element.style.borderColor = "green";
+    //         });
+    //         document.querySelectorAll(".featured-player").forEach(function(element) {
+    //             element.style.backgroundColor = "lightgreen";
+    //         });
+    //         document.getElementById('voteButton').disabled = true;
+    //         var message = "You voted for: " + data.voted_player;
+    //         document.getElementById('voteResultMessage').innerText = message;
+    //     } else {
+    //         document.querySelector("#voteButton").style.color = "purple";
+    //     }
+    // });
+
+    socket.on('update_player_vote', (data) => {
+        var voted_player = data.voted_player
+        var voted_player_div = document.getElementById(voted_player);
+        // Update the border color of the element when the 'update_player_vote' event is received
+        if (voted_player_div) {
+        console.log(voted_player)
+        voted_player_div.style.borderColor = 'green';
+        voted_player_div.style.backgroundColor = 'lightgreen'
+        }
+    });
+
+    socket.on('update_village', function(data) {
+        // Update webpage content
+        document.getElementById('content').innerHTML = data.html
+    });
+});
+</script>
 <script src="./static/js/app.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+document.querySelector("#voteButton").onclick = function() {
+    var vote = document.querySelector("#vote").value;
+        console.log('voting')
+        if(vote) {
+            // Replace 'yourEndpointURL' with the actual endpoint where you handle the vote
+            fetch('/castVote', {
+                method: 'POST', // or 'PUT' if you're updating a resource
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ vote: vote }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // This is where you handle the response similar to the 'voteResponse' socket event
+                if(data.success) {
+                    document.querySelector("#voteButton").style.color = "green";
+                    document.querySelectorAll(".featured-player").forEach(function(element) {
+                        element.style.borderColor = "green";
+                    });
+                    document.querySelectorAll(".featured-player").forEach(function(element) {
+                        element.style.backgroundColor = "lightgreen";
+                    });
+                    document.getElementById('voteButton').disabled = true;
+                    var message = "You voted for: " + data.voted_player;
+                    document.getElementById('voteResultMessage').innerText = message;
+                } else {
+                    document.querySelector("#voteButton").style.color = "purple";
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        } else {
+            alert("Please enter a vote.");
+        }
+    }
+});
+
+</script>
+
+
+<script>
+    // Replace with the actual ID and player name you want to use
+    const id = "{{ game['_id'] }}";;
+    const playerName = "{{ curr_player['player_name'] }}";
+
+    // Function to call the Flask endpoint
+    function pollCheckVotes() {
+        fetch(`/checkVotes?_id=${id}&player_name=${playerName}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+            console.log(data);
+            // Check if the status is not 'do_nothing'
+            if (data.status !== 'do_nothing') {
+                document.getElementById('content').innerHTML = data.html;
+            }
+            // If status is 'do_nothing', we do not update the HTML.
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    }
+
+    // Poll the function every 3 seconds
+    setInterval(pollCheckVotes, 3000);
+</script>
 
 </body>
 </html>
