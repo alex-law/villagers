@@ -35,11 +35,10 @@ def updateMongoPlayer(game, player, db):
     result = db.collection.update_one(filter, update_fields, upsert=False)
     return result
 
-def whoLost(players, stage):
+def whoLost(stage_voted_players, players):
     votes = {p:0 for p in [*players]}
-    for player_name, player in players.items():
-        if player['character'] == 'wolf':
-            votes[player['vote']] += 1
+    for player in stage_voted_players:
+        votes[player['vote']] += 1
     sorted_dict = dict(sorted(votes.items(), key=lambda item: item[1], reverse=True))
     # Is this random in case of tie draw?
     losing_player = [*sorted_dict][0]

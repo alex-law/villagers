@@ -10,7 +10,8 @@ def initialiseDict(game_id, player):
                  'status': 'initialised',
                  'round': 1,
                  'stage': 'night',
-                 'game_id': game_id}
+                 'game_id': game_id,
+                 'winners': ''}
     return game_dict
 
 def getGameFromSession(session, db):
@@ -21,9 +22,9 @@ def getGameFromSession(session, db):
 def replaceGame(game, db, _id):
     db.collection.replace_one({'_id': _id}, game)
 
-def endOfPlay(game, db, _id):
+def endOfPlay(game, db, stage_voted_players, _id):
     players = game['players']
-    losing_player = player_logic.whoLost(players, game['stage'])
+    losing_player = player_logic.whoLost(stage_voted_players, players)
     players = player_logic.killPlayer(players, losing_player)
     players = player_logic.resetVotes(players)
     game['players'] = players

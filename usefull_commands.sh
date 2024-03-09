@@ -38,7 +38,7 @@ kubectl apply -f mongodb-service.yaml
 
 
 #After this can run
-kubect get pods
+kubectl get pods
 #To get the available pods, then want to get logs from flask pod
 kubectl logs flask-deployment-55bd96bbfd-4gmmb
 #Use queries like this to get more recent logs
@@ -47,4 +47,12 @@ kubectl logs flask-deployment-55bd96bbfd-4gmmb --since=1m
 
 #Then to connect to mongodb locally run
 #whereh mongodb id found from get pods
- kubectl port-forward mongodb-deployment-74c6dd967f-fqhv4 27017:27017
+kubectl port-forward mongodb-deployment-74c6dd967f-fqhv4 27017:27017
+
+
+
+docker build . -t villagersflaskapp:latest
+docker tag villagersflaskapp:latest alexlaw/villagersflaskapp:latest
+docker push alexlaw/villagersflaskapp:latest
+
+kubectl set image deployment/flask-deployment flask=alexlaw/villagersflaskapp:latest

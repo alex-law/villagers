@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Villagers Game</title>
+    <link rel="stylesheet" href="./static/css/styles.css">
+
+    <title>WebSocket Scripts</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<div id="content">
+
+    <h1 id="villagers-heading">Villagers</h1>
+
+    <!-- Status Bar at the Top -->
+    <div class="status-bar">
+        <p>Game Status: <span>{{ game['status'] }}</span></p>
+        <p>Round: <span>{{ game['round'] }}</span></p>
+        <p>Stage: <span>{{ game['stage'] }}</span></p>
+    </div>
+
+    <div class="container">
+        <!-- Featured Player -->
+        {% if curr_player['status'] == 'alive' %}
+            <div class="player-square featured-player">
+                <h3>{{ curr_player['player_name'] }}</h3>
+                <p>Character: {{ curr_player['character'] }}</p>
+                <!-- Example of a different stat for the featured player -->
+            </div>
+        {% else %}
+            <div class="player-square featured-player dead-player">
+                <h3>{{ curr_player['player_name'] }}</h3>
+                <p>Character: {{ curr_player['character'] }}</p>
+                <p>You were killed</p>
+                <!-- Example of a different stat for the featured player -->
+            </div>
+        {% endif %}
+        <!-- Other Alive Players -->
+        {% for alive_player in alive_players %}
+            <div  id="{{ alive_player['player_name'] }}" class="player-square">
+                <h3>{{ alive_player['player_name'] }}</h3>
+            </div>
+        {% endfor %}
+
+        <!-- Other Dead Players -->
+        {% for dead_player in dead_players %}
+            <div  id="{{ dead_player['player_name'] }}" class="player-square dead-player">
+                <h3>{{ dead_player['player_name'] }}</h3>
+                <p>You were killed</p>
+            </div>
+        {% endfor %}
+
+        <h3>{{ game['winners'] }} WIN</h3>
+
+
+    </div>
+
+    <a href="/" class="button">Return to home</a>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script src="./static/js/app.js"></script>
+
+</body>
+</html>
